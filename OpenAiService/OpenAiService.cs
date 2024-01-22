@@ -5,6 +5,7 @@ using PLang.Interfaces;
 using PLang.Utils;
 using PLang.Utils.Extractors;
 using System.Text;
+using static PLang.Services.LlmService.PLangLlmService;
 
 namespace PLang.Services.OpenAi
 {
@@ -59,12 +60,12 @@ namespace PLang.Services.OpenAi
 			string bearer = settings.Get(this.GetType(), "Global_AIServiceKey", "", "Type in API key for OpenAI service");
 			string data = $@"{{
 		""model"":""{question.model}"",
-		""temperature"":{question.temperature ?? 0},
+		""temperature"":{question.temperature},
 		""max_tokens"":{question.maxLength},
-		""top_p"":{question.top_p ?? 0},
-		""frequency_penalty"":{question.frequencyPenalty ?? 0},
-		""presence_penalty"":{question.presencePenalty ?? 0},
-		""messages"":{question.promptMessage}
+		""top_p"":{question.top_p},
+		""frequency_penalty"":{question.frequencyPenalty},
+		""presence_penalty"":{question.presencePenalty},
+		""messages"":{JsonConvert.SerializeObject(question.promptMessage)}
 			}}";
 			request.Headers.UserAgent.ParseAdd("plang v0.1");
 			request.Headers.Add("Authorization", $"Bearer {bearer}");
@@ -106,7 +107,19 @@ I could not deserialize your response. This is the error. Please try to fix it.
 {ex.ToString()}
 ### error in your response ###
 ";
-					var qu = new LlmRequest(question.type, question.promptMessage + assitant, question.model, question.caching);
+					question.promptMessage.Add(new LlmService.PLangLlmService.Message()
+					{
+						role = "assistant",
+						content = new List<LlmService.PLangLlmService.Content>()
+						{
+							new LlmService.PLangLlmService.Content()
+							{
+								text = assitant
+							}
+						}
+
+					});
+					var qu = new LlmRequest(question.type, question.promptMessage, question.model, question.caching);
 
 					return await Query(qu, responseType, ++errorCount);
 				}
@@ -130,20 +143,7 @@ I could not deserialize your response. This is the error. Please try to fix it.
 
 
 
-		private class Message
-		{
-			public Message()
-			{
-				content = new();
-			}
-			public string role { get; set; }
-			public List<Content> content { get; set; }
-		}
-		private class Content
-		{
-			public string type = "text";
-			public string text { get; set; }
-		}
+	
 		public virtual async Task<object?> Query(LlmQuestion question, Type responseType, int errorCount = 0)
 		{
 			// todo: should remove this function, should just use LlmRequest.
@@ -189,7 +189,7 @@ I could not deserialize your response. This is the error. Please try to fix it.
 				});
 			}
 
-			LlmRequest llmRequest = new LlmRequest(question.type, JsonConvert.SerializeObject(promptMessage), question.model, question.caching);
+			LlmRequest llmRequest = new LlmRequest(question.type, promptMessage, question.model, question.caching);
 			return await Query(llmRequest, responseType);
 		
 
