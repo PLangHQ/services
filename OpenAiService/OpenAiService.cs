@@ -190,7 +190,9 @@ I could not deserialize your response. This is the error. Please try to fix it.
 			}
 
 			LlmRequest llmRequest = new LlmRequest(question.type, promptMessage, question.model, question.caching);
-			return await Query(llmRequest, responseType);
+			var response = await Query(llmRequest, responseType);
+			question.RawResponse = llmRequest.RawResponse;
+			return response;
 		
 
 		}
