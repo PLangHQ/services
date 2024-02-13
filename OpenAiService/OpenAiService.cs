@@ -40,7 +40,7 @@ namespace PLang.Services.OpenAi
 		}
 		public virtual async Task<object?> Query(LlmRequest question, Type responseType, int errorCount)
 		{
-			SetExtractor(question, responseType);
+			Extractor = ExtractorFactory.GetExtractor(question, responseType);
 
 			var q = cacheHelper.GetCachedQuestion(question);
 			if (!question.Reload && question.caching && q != null)
@@ -118,50 +118,6 @@ I could not deserialize your response. This is the error. Please try to fix it.
 			}
 		}
 
-		private void SetExtractor(LlmRequest question, Type responseType)
-		{
-			if (question.llmResponseType == "text")
-			{
-				Extractor = new TextExtractor();
-			}
-			else if (question.llmResponseType == "csharp")
-			{
-				Extractor = new CSharpExtractor();
-				var systemMessage = question.promptMessage.FirstOrDefault(p => p.Role == "system");
-				if (systemMessage == null)
-				{
-					systemMessage = new LlmMessage() { Role = "system", Content = new() };
-				}
-				systemMessage.Content.Add(new LlmContent(Extractor.GetRequiredResponse(responseType)));
-
-			}
-			else if (question.llmResponseType == "json" || !string.IsNullOrEmpty(question.scheme))
-			{
-				var systemMessage = question.promptMessage.FirstOrDefault(p => p.Role == "system");
-				if (systemMessage == null)
-				{
-					systemMessage = new LlmMessage() { Role = "system", Content = new() };
-				}
-				if (string.IsNullOrEmpty(question.scheme))
-				{
-					question.scheme = TypeHelper.GetJsonSchema(responseType);
-				}
-
-				systemMessage.Content.Add(new LlmContent($"You MUST respond in JSON, scheme: {question.scheme}"));
-				Extractor = new JsonExtractor();
-			}
-			else
-			{
-				var systemMessage = question.promptMessage.FirstOrDefault(p => p.Role == "system");
-				if (systemMessage == null)
-				{
-					systemMessage = new LlmMessage() { Role = "system", Content = new() };
-				}
-				systemMessage.Content.Add(new LlmContent($@"You MUST insert your response between ```{question.llmResponseType}
-				```"));
-				Extractor = new GenericExtractor(question.llmResponseType);
-			}
-		}
 
 
 	}
