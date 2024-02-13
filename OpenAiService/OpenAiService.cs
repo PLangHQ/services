@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using PLang.Building.Model;
 using PLang.Interfaces;
+using PLang.Models;
 using PLang.Utils;
 using PLang.Utils.Extractors;
 using System.Text;
@@ -9,7 +9,7 @@ using static PLang.Services.LlmService.PLangLlmService;
 
 namespace PLang.Services.OpenAi
 {
-	public class OpenAiService : ILlmService
+    public class OpenAiService : ILlmService
 	{
 		OpenAI_API.OpenAIAPI api;
 		private readonly ISettings settings;
@@ -32,7 +32,7 @@ namespace PLang.Services.OpenAi
 
 		public virtual async Task<T?> Query<T>(LlmRequest question)
 		{
-			return (T)await Query(question, typeof(T));
+			return (T?)await Query(question, typeof(T));
 		}
 		public virtual async Task<object?> Query(LlmRequest question, Type responseType)
 		{
@@ -40,7 +40,7 @@ namespace PLang.Services.OpenAi
 		}
 		public virtual async Task<object?> Query(LlmRequest question, Type responseType, int errorCount)
 		{
-
+			SetExtractor(question, responseType);
 
 			var q = cacheHelper.GetCachedQuestion(question);
 			if (!question.Reload && question.caching && q != null)
@@ -107,20 +107,9 @@ I could not deserialize your response. This is the error. Please try to fix it.
 {ex.ToString()}
 ### error in your response ###
 ";
-					question.promptMessage.Add(new LlmService.PLangLlmService.Message()
-					{
-						role = "assistant",
-						content = new List<LlmService.PLangLlmService.Content>()
-						{
-							new LlmService.PLangLlmService.Content()
-							{
-								text = assitant
-							}
-						}
+					question.promptMessage.Add(new LlmMessage("assistant", assitant));
 
-					});
 					var qu = new LlmRequest(question.type, question.promptMessage, question.model, question.caching);
-
 					return await Query(qu, responseType, ++errorCount);
 				}
 
@@ -129,72 +118,51 @@ I could not deserialize your response. This is the error. Please try to fix it.
 			}
 		}
 
-
-		/* All this is depricated */
-		public virtual async Task<T?> Query<T>(LlmQuestion question)
+		private void SetExtractor(LlmRequest question, Type responseType)
 		{
-			return (T)await Query(question, typeof(T));
+			if (question.llmResponseType == "text")
+			{
+				Extractor = new TextExtractor();
+			}
+			else if (question.llmResponseType == "csharp")
+			{
+				Extractor = new CSharpExtractor();
+				var systemMessage = question.promptMessage.FirstOrDefault(p => p.Role == "system");
+				if (systemMessage == null)
+				{
+					systemMessage = new LlmMessage() { Role = "system", Content = new() };
+				}
+				systemMessage.Content.Add(new LlmContent(Extractor.GetRequiredResponse(responseType)));
+
+			}
+			else if (question.llmResponseType == "json" || !string.IsNullOrEmpty(question.scheme))
+			{
+				var systemMessage = question.promptMessage.FirstOrDefault(p => p.Role == "system");
+				if (systemMessage == null)
+				{
+					systemMessage = new LlmMessage() { Role = "system", Content = new() };
+				}
+				if (string.IsNullOrEmpty(question.scheme))
+				{
+					question.scheme = TypeHelper.GetJsonSchema(responseType);
+				}
+
+				systemMessage.Content.Add(new LlmContent($"You MUST respond in JSON, scheme: {question.scheme}"));
+				Extractor = new JsonExtractor();
+			}
+			else
+			{
+				var systemMessage = question.promptMessage.FirstOrDefault(p => p.Role == "system");
+				if (systemMessage == null)
+				{
+					systemMessage = new LlmMessage() { Role = "system", Content = new() };
+				}
+				systemMessage.Content.Add(new LlmContent($@"You MUST insert your response between ```{question.llmResponseType}
+				```"));
+				Extractor = new GenericExtractor(question.llmResponseType);
+			}
 		}
 
-		public virtual async Task<object?> Query(LlmQuestion question, Type responseType)
-		{
-			return await Query(question, responseType, 0);
-		}
 
-
-
-	
-		public virtual async Task<object?> Query(LlmQuestion question, Type responseType, int errorCount = 0)
-		{
-			// todo: should remove this function, should just use LlmRequest.
-			// old setup, and should be removed.
-			var promptMessage = new List<Message>();
-			if (!string.IsNullOrEmpty(question.system))
-			{
-				var contents = new List<Content>();
-				contents.Add(new Content
-				{
-					text = question.system
-				});
-				promptMessage.Add(new Message()
-				{
-					role = "system",
-					content = contents
-				});
-			}
-			if (!string.IsNullOrEmpty(question.assistant))
-			{
-				var contents = new List<Content>();
-				contents.Add(new Content
-				{
-					text = question.assistant
-				});
-				promptMessage.Add(new Message()
-				{
-					role = "assistant",
-					content = contents
-				});
-			}
-			if (!string.IsNullOrEmpty(question.question))
-			{
-				var contents = new List<Content>();
-				contents.Add(new Content
-				{
-					text = question.question
-				});
-				promptMessage.Add(new Message()
-				{
-					role = "user",
-					content = contents
-				});
-			}
-
-			LlmRequest llmRequest = new LlmRequest(question.type, promptMessage, question.model, question.caching);
-			var response = await Query(llmRequest, responseType);
-			question.RawResponse = llmRequest.RawResponse;
-			return response;
-		
-
-		}
 	}
 }
