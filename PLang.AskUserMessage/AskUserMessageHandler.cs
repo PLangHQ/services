@@ -21,7 +21,9 @@ namespace PLang.AskUserMessage
 
 		public async Task<bool> Handle(AskUserException ex)
 		{
-			var adminAddress = memoryStack.Get<string>("AdminAddress", true);
+			// user should add step into his Events.goal or Start.goal
+			// - set static variable 'AskUserMessageAddress'='npub123....'
+			var adminAddress = memoryStack.Get<string>("AskUserMessageAddress", true);
 
 			Dictionary<string, object?> parameters = [];
 			parameters.Add("content", ex.Message);
@@ -29,11 +31,14 @@ namespace PLang.AskUserMessage
 
 			await pseudoRuntime.RunGoal(engine, context, Path.DirectorySeparatorChar.ToString(), ".services/AskUserMessage/SendMessage", parameters);
 
+			// Wait for the response
 			while (true)
 			{
 				var answer = memoryStack.Get<string?>("AskUserResponse");
 				if (!string.IsNullOrEmpty(answer))
 				{
+					// the exception contain link to method that should be called when user answers
+					// using InvokeCallback, it will call the method and send in the answer.
 					await ex.InvokeCallback(answer);
 					memoryStack.Put("AskUserResponse", null);
 					return true;
