@@ -1,0 +1,6 @@
+SendMessage
+- send private message %to%, %content%
+- listen to message from %to%, call SetAnswer, set content to %answer%
+
+SetAnswer
+- set var %AskUserResponse%=%answer%
