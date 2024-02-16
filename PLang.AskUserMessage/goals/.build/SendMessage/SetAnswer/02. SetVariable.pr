@@ -61,7 +61,7 @@
     ],
     "model": "gpt-4",
     "caching": true,
-    "RawResponse": "{\r\n  \"FunctionName\": \"SetVariable\",\r\n  \"Parameters\": [\r\n    {\r\n      \"Type\": \"String\",\r\n      \"Name\": \"key\",\r\n      \"Value\": \"%AskUserResponse%\"\r\n    },\r\n    {\r\n      \"Type\": \"Object\",\r\n      \"Name\": \"value\",\r\n      \"Value\": \"%answer%\"\r\n    }\r\n  ],\r\n  \"ReturnValue\": null\r\n}"
+    "RawResponse": null
   },
   "RunOnBuild": false
 }

@@ -3,25 +3,47 @@
   "Comment": null,
   "GoalSteps": [
     {
-      "Text": "set var %AskUserResponse%=%answer%",
+      "Text": "if %senderAddress% == %to% then",
       "Comment": null,
-      "ModuleType": "PLang.Modules.LocalOrGlobalVariableModule",
-      "Name": "SetVariable",
-      "Description": "Set the variable 'AskUserResponse' with the value of 'answer'",
-      "PrFileName": "01. SetVariable.pr",
-      "RelativePrPath": ".build\\SendMessage\\SetAnswer\\01. SetVariable.pr",
+      "ModuleType": null,
+      "Name": null,
+      "Description": null,
+      "PrFileName": null,
+      "RelativePrPath": null,
       "Indent": 0,
       "Execute": true,
       "RunOnce": false,
-      "Generated": "2024-02-15T10:41:23.0926343+00:00",
+      "Generated": "0001-01-01T00:00:00",
       "WaitForExecution": true,
       "ErrorHandler": null,
       "RetryHandler": null,
       "CacheHandler": null,
       "CancellationHandler": null,
       "Custom": {},
-      "Number": 0,
+      "Number": 3,
       "LineNumber": 5,
+      "LlmRequest": null
+    },
+    {
+      "Text": "set var %AskUserResponse%=%answer%",
+      "Comment": null,
+      "ModuleType": "PLang.Modules.LocalOrGlobalVariableModule",
+      "Name": "SetVariable",
+      "Description": "Set the variable 'AskUserResponse' with the value of 'answer'",
+      "PrFileName": "02. SetVariable.pr",
+      "RelativePrPath": ".build\\SendMessage\\SetAnswer\\02. SetVariable.pr",
+      "Indent": 4,
+      "Execute": false,
+      "RunOnce": false,
+      "Generated": "2024-02-15T16:04:24.6714413+00:00",
+      "WaitForExecution": true,
+      "ErrorHandler": null,
+      "RetryHandler": null,
+      "CacheHandler": null,
+      "CancellationHandler": null,
+      "Custom": {},
+      "Number": 1,
+      "LineNumber": 6,
       "LlmRequest": {
         "temperature": 0.0,
         "top_p": 0.0,
@@ -66,7 +88,7 @@
         ],
         "model": "gpt-4",
         "caching": true,
-        "RawResponse": "{\r\n  \"StepName\": \"SetVariable\",\r\n  \"StepDescription\": \"Set the variable 'AskUserResponse' with the value of 'answer'\",\r\n  \"Modules\": [\r\n    \"PLang.Modules.LocalOrGlobalVariableModule\"\r\n  ],\r\n  \"WaitForExecution\": true\r\n}"
+        "RawResponse": null
       }
     }
   ],
@@ -81,5 +103,5 @@
   "GoalApiInfo": null,
   "Injections": [],
   "Signature": null,
-  "Hash": "62b5e0fcb388c293db33dc3ef2ffa99b57cf3adfb1e99ec77007442607790f7c"
+  "Hash": "9d4c4e49bc0e024ac66a00d881ee90e3d2c9b914de143960e5036179720b0d38"
 }

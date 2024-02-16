@@ -1,6 +1,7 @@
 SendMessage
 - send private message %to%, %content%
-- listen to message from %to%, call SetAnswer, set content to %answer%
+- listen to message call SetAnswer, set content to %answer%, %senderAddress%
 
 SetAnswer
-- set var %AskUserResponse%=%answer%
+- if %senderAddress% == %to% then
+    - set var %AskUserResponse%=%answer%
