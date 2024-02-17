@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using PLang.Interfaces;
 using PLang.Models;
+using PLang.Services.LlmService;
 using PLang.Utils;
 using PLang.Utils.Extractors;
 using System.Text;
@@ -14,15 +15,15 @@ namespace PLang.Services.OpenAi
 		OpenAI_API.OpenAIAPI api;
 		private readonly ISettings settings;
 		private readonly ILogger logger;
-		private readonly CacheHelper cacheHelper;
+		private readonly LlmCaching llmCaching;
 		private readonly PLangAppContext context;
 
 		public IContentExtractor Extractor { get; set; }
 
-		public OpenAiService(ISettings settings, ILogger logger, CacheHelper cacheHelper, PLangAppContext context)
+		public OpenAiService(ISettings settings, ILogger logger, LlmCaching llmCaching, PLangAppContext context)
 		{
 			this.logger = logger;
-			this.cacheHelper = cacheHelper;
+			this.llmCaching = llmCaching;
 			this.context = context;
 			this.settings = settings;
 
@@ -42,7 +43,7 @@ namespace PLang.Services.OpenAi
 		{
 			Extractor = ExtractorFactory.GetExtractor(question, responseType);
 
-			var q = cacheHelper.GetCachedQuestion(question);
+			var q = llmCaching.GetCachedQuestion(question);
 			if (!question.Reload && question.caching && q != null)
 			{
 				try
@@ -93,7 +94,7 @@ namespace PLang.Services.OpenAi
 				var obj = Extractor.Extract(question.RawResponse, responseType);
 				if (question.caching)
 				{
-					cacheHelper.SetCachedQuestion(question);
+					llmCaching.SetCachedQuestion(question);
 				}
 				return obj;
 			}

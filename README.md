@@ -22,7 +22,7 @@ Start
 ```
 The parameter global indicates that it should be globally set for the application. If it is not defined, it only applies to the goal that is running.
 
-Here you can see an example using OpenAiService on build
+Here you can see an example using OpenAiService li on build. You will need the OpenAiService dll in your `.services` folder
 
 ```plang
 @llm=OpenAiService
@@ -33,4 +33,6 @@ Start
 It follows a strict pattern of @llm=..., so that the plang builder and runtime can parse it in the code before any llm is needed.
 
 Download the folder of the service you want to inject.
+
+More information on [Services can be found in our documentation](https://github.com/PLangHQ/plang/blob/main/Documentation/Services.md)
 
