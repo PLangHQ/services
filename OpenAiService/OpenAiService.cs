@@ -17,6 +17,7 @@ namespace PLang.Services.OpenAi
 		private readonly ILogger logger;
 		private readonly LlmCaching llmCaching;
 		private readonly PLangAppContext context;
+		private readonly string appId = "7d3112c4-d4a1-462b-bf83-417bb4f02994";
 
 		public IContentExtractor Extractor { get; set; }
 
@@ -58,6 +59,7 @@ namespace PLang.Services.OpenAi
 			var httpMethod = new HttpMethod("POST");
 			var request = new HttpRequestMessage(httpMethod, "https://api.openai.com/v1/chat/completions");
 
+			settings.SetSharedSettings(appId);
 			string bearer = settings.Get(this.GetType(), "Global_AIServiceKey", "", "Type in API key for OpenAI service");
 			string data = $@"{{
 		""model"":""{question.model}"",
