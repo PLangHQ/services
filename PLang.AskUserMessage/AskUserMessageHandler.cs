@@ -1,6 +1,8 @@
-﻿using PLang.Exceptions.AskUser;
+﻿using Microsoft.Extensions.Logging;
+using PLang.Exceptions.AskUser;
 using PLang.Interfaces;
 using PLang.Runtime;
+using Websocket.Client.Logging;
 
 namespace PLang.AskUserMessage
 {
@@ -10,13 +12,15 @@ namespace PLang.AskUserMessage
 		private readonly IPseudoRuntime pseudoRuntime;
 		private readonly PLangAppContext context;
 		private readonly MemoryStack memoryStack;
+		private readonly ILogger logger;
 		private IEngine? goalEngine = null;
-		public AskUserMessageHandler(IEngine engine, IPseudoRuntime pseudoRuntime, PLangAppContext context, MemoryStack memoryStack)
+		public AskUserMessageHandler(IEngine engine, IPseudoRuntime pseudoRuntime, PLangAppContext context, MemoryStack memoryStack, ILogger logger)
 		{
 			this.engine = engine;
 			this.pseudoRuntime = pseudoRuntime;
 			this.context = context;
 			this.memoryStack = memoryStack;
+			this.logger = logger;
 		}
 
 		public async Task<bool> Handle(AskUserException ex)
@@ -24,11 +28,17 @@ namespace PLang.AskUserMessage
 			// user should add step into his Events.goal or Start.goal
 			// - set static variable 'AskUserMessageAddress'='npub123....'
 			var adminAddress = memoryStack.Get<string>("AskUserMessageAddress", true);
-
+			if (string.IsNullOrEmpty(adminAddress))
+			{
+				logger.LogWarning(@$"%AskUserMessageAddress% is empty so no message will be sent. Content is:
+{ex.Message}
+");
+				return false;
+				
+			}
 			Dictionary<string, object?> parameters = [];
 			parameters.Add("content", ex.Message);
 			parameters.Add("to", adminAddress);
-			parameters.Add("bara", "test");
 
 			InstallServiceGoal();
 			
