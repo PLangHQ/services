@@ -2,8 +2,7 @@ SendMessage
 - send private message %to%, %content%
 - [message] get public key, write to %pubKey%
 - write out 'Send message to %to% from %pubKey%'
-- listen to message call SetAnswer, set content to %answer%, %senderAddress%
+- listen to message, on new message from %to%, call SetAnswer, set content to %answer%, %senderAddress%
 
 SetAnswer
-- if %senderAddress% == %to% then
-    - set var %AskUserResponse%=%answer%
+- set var %AskUserResponse%=%answer%

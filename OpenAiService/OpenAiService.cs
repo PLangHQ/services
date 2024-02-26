@@ -60,7 +60,7 @@ namespace PLang.Services.OpenAi
 			var request = new HttpRequestMessage(httpMethod, "https://api.openai.com/v1/chat/completions");
 
 			settings.SetSharedSettings(appId);
-			string bearer = settings.Get(this.GetType(), "Global_AIServiceKey", "", "Type in API key for OpenAI service");
+			string bearer = settings.Get(this.GetType(), "OpenAiKey", "", "Type in API key for OpenAI service");
 			string data = $@"{{
 		""model"":""{question.model}"",
 		""temperature"":{question.temperature},

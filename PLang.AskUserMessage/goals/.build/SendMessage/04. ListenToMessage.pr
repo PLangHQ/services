@@ -16,11 +16,18 @@
         "Type": "String",
         "Name": "senderVariableName",
         "Value": "%senderAddress%"
+      },
+      {
+        "Type": "String[]",
+        "Name": "onlyMessageFromSenders",
+        "Value": [
+          "%to%"
+        ]
       }
     ],
     "ReturnValue": null
   },
-  "Text": "listen to message call SetAnswer, set content to %answer%, %senderAddress%",
+  "Text": "listen to message, on new message from %to%, call SetAnswer, set content to %answer%, %senderAddress%",
   "Reload": false,
   "LlmRequest": {
     "temperature": 0.0,
@@ -50,7 +57,7 @@
         "content": [
           {
             "type": "text",
-            "text": "## functions available starts ##\r\nString GetPublicKey() \nList`1 GetRelays() \nvoid SetCurrentAccount(String publicKeyOrName) \nvoid Listen(String goalName, String? contentVariableName = \"content\", String? senderVariableName = \"sender\", String? eventVariableName = \"__NosrtEventKey__\", Nullable`1<DateTimeOffset>? listenFromDateTime, String? onlyMessageFromSender)  // goalName should be prefixed by ! and be whole word with possible slash(/). \nvoid SendPrivateMessageToMyself(String content) \nvoid SendPrivateMessage(String content, String npubReceiverPublicKey)\r\n## functions available ends ##\r\n## defined variables ##\r\nanswer (type:object), senderAddress (type:object), \r\n## defined variables ##"
+            "text": "## functions available starts ##\r\nString GetPublicKey() \nList`1 GetRelays() \nvoid SetCurrentAccount(String publicKeyOrName) \nvoid Listen(String goalName, String? contentVariableName = \"content\", String? senderVariableName = \"sender\", String? eventVariableName = \"__NosrtEventKey__\", Nullable`1<DateTimeOffset>? listenFromDateTime, String[]? onlyMessageFromSenders)  // goalName should be prefixed by ! and be whole word with possible slash(/). \nvoid SendPrivateMessageToMyself(String content) \nvoid SendPrivateMessage(String content, String npubReceiverPublicKey)\r\n## functions available ends ##\r\n## defined variables ##\r\nto (type:object), answer (type:object), senderAddress (type:object), \r\n## defined variables ##"
           },
           {
             "type": "text",
@@ -63,14 +70,14 @@
         "content": [
           {
             "type": "text",
-            "text": "listen to message call SetAnswer, set content to %answer%, %senderAddress%"
+            "text": "listen to message, on new message from %to%, call SetAnswer, set content to %answer%, %senderAddress%"
           }
         ]
       }
     ],
     "model": "gpt-4",
     "caching": true,
-    "RawResponse": "{\r\n  \"FunctionName\": \"Listen\",\r\n  \"Parameters\": [\r\n    {\r\n      \"Type\": \"String\",\r\n      \"Name\": \"goalName\",\r\n      \"Value\": \"SetAnswer\"\r\n    },\r\n    {\r\n      \"Type\": \"String\",\r\n      \"Name\": \"contentVariableName\",\r\n      \"Value\": \"%answer%\"\r\n    },\r\n    {\r\n      \"Type\": \"String\",\r\n      \"Name\": \"senderVariableName\",\r\n      \"Value\": \"%senderAddress%\"\r\n    }\r\n  ],\r\n  \"ReturnValue\": null\r\n}"
+    "RawResponse": "{\n  \"FunctionName\": \"Listen\",\n  \"Parameters\": [\n    {\n      \"Type\": \"String\",\n      \"Name\": \"goalName\",\n      \"Value\": \"SetAnswer\"\n    },\n    {\n      \"Type\": \"String\",\n      \"Name\": \"contentVariableName\",\n      \"Value\": \"%answer%\"\n    },\n    {\n      \"Type\": \"String\",\n      \"Name\": \"senderVariableName\",\n      \"Value\": \"%senderAddress%\"\n    },\n    {\n      \"Type\": \"String[]\",\n      \"Name\": \"onlyMessageFromSenders\",\n      \"Value\": [\n        \"%to%\"\n      ]\n    }\n  ],\n  \"ReturnValue\": null\n}"
   },
   "RunOnBuild": false
 }
