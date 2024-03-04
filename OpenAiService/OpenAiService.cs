@@ -43,8 +43,8 @@ namespace PLang.Services.OpenAi
 		public virtual async Task<object?> Query(LlmRequest question, Type responseType, int errorCount)
 		{
 			Extractor = ExtractorFactory.GetExtractor(question, responseType);
-
-			var q = llmCaching.GetCachedQuestion(question);
+	
+			var q = llmCaching.GetCachedQuestion(appId, question);
 			if (!question.Reload && question.caching && q != null)
 			{
 				try
@@ -96,7 +96,7 @@ namespace PLang.Services.OpenAi
 				var obj = Extractor.Extract(question.RawResponse, responseType);
 				if (question.caching)
 				{
-					llmCaching.SetCachedQuestion(question);
+					llmCaching.SetCachedQuestion(appId, question);
 				}
 				return obj;
 			}
