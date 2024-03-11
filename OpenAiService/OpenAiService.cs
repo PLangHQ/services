@@ -61,6 +61,7 @@ namespace PLang.Services.OpenAi
 
 			settings.SetSharedSettings(appId);
 			string bearer = settings.Get(this.GetType(), "OpenAiKey", "", "Type in API key for OpenAI service");
+			settings.SetSharedSettings(null);
 			string data = $@"{{
 		""model"":""{question.model}"",
 		""temperature"":{question.temperature},
