@@ -1,13 +1,11 @@
-﻿using Jil;
-using Microsoft.Extensions.Logging;
-using Nethereum.ABI.CompilationMetadata;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PLang.Errors;
 using PLang.Interfaces;
 using PLang.Models;
 using PLang.Utils;
 using System.Collections;
 using System.Text;
-using static PLang.Utils.VariableHelper;
 
 namespace EnvironmentSettings
 {
@@ -15,6 +13,9 @@ namespace EnvironmentSettings
 	{
 		private readonly ILogger logger;
 		private Dictionary<string, Setting> environmentSettings;
+
+		public bool IsDefaultSystemDbPath => throw new NotImplementedException();
+
 		public EnvironmentSettingsRepository(IPLangFileSystem fileSystem, ILogger logger)
 		{
 			this.logger = logger;
@@ -150,6 +151,16 @@ value: {json}");
 				sb.Append(key + "=" + json + Environment.NewLine);
 			}
 			return sb.ToString();
+		}
+
+		public IError? SetSystemDbPath(string path)
+		{
+			return null;
+		}
+
+		public void ResetSystemDbPath()
+		{
+			
 		}
 	}
 }
