@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using PLang.Errors;
 using PLang.Interfaces;
 using PLang.Models;
 using PLang.Services.LlmService;
@@ -32,15 +33,16 @@ namespace PLang.Services.OpenAi
 		}
 
 
-		public virtual async Task<T?> Query<T>(LlmRequest question)
+		public virtual async Task<(T?, IError?)> Query<T>(LlmRequest question)
 		{
-			return (T?)await Query(question, typeof(T));
+			var result = await Query(question, typeof(T));
+			return ((T?) result.Item1, result.Item2);
 		}
-		public virtual async Task<object?> Query(LlmRequest question, Type responseType)
+		public virtual async Task<(object?, IError?)> Query(LlmRequest question, Type responseType)
 		{
 			return await Query(question, responseType, 0);
 		}
-		public virtual async Task<object?> Query(LlmRequest question, Type responseType, int errorCount)
+		public virtual async Task<(object?, IError?)> Query(LlmRequest question, Type responseType, int errorCount)
 		{
 			Extractor = ExtractorFactory.GetExtractor(question, responseType);
 	
@@ -50,7 +52,7 @@ namespace PLang.Services.OpenAi
 				try
 				{
 					JsonConvert.DeserializeObject(q.RawResponse);
-					return Extractor.Extract(q.RawResponse, responseType);
+					return (Extractor.Extract(q.RawResponse, responseType), null);
 				}
 				catch { }
 			}
@@ -83,13 +85,13 @@ namespace PLang.Services.OpenAi
 				string responseBody = await response.Content.ReadAsStringAsync();
 				if (!response.IsSuccessStatusCode)
 				{
-					throw new Exception(responseBody);
+					return (null, new Error(responseBody));
 				}
 
 				var json = JsonConvert.DeserializeObject<dynamic>(responseBody);
 				if (json == null || json.choices == null || json.choices.Count == 0)
 				{
-					throw new Exception("Could not parse OpenAI response: " + responseBody);
+					return (null, new Error("Could not parse OpenAI response: " + responseBody));
 				}
 
 				question.RawResponse = json.choices[0].message.content.ToString();
@@ -99,7 +101,7 @@ namespace PLang.Services.OpenAi
 				{
 					llmCaching.SetCachedQuestion(appId, question);
 				}
-				return obj;
+				return (obj, null);
 			}
 			catch (Exception ex)
 			{
@@ -121,8 +123,6 @@ I could not deserialize your response. This is the error. Please try to fix it.
 
 			}
 		}
-
-
 
 	}
 }
