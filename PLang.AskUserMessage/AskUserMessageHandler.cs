@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using PLang.Exceptions.AskUser;
+using PLang.Errors;
+using PLang.Errors.AskUser;
 using PLang.Interfaces;
 using PLang.Runtime;
-using Websocket.Client.Logging;
 
 namespace PLang.AskUserMessage
 {
@@ -23,7 +23,7 @@ namespace PLang.AskUserMessage
 			this.logger = logger;
 		}
 
-		public async Task<bool> Handle(AskUserException ex)
+		public async Task<(bool, IError?)> Handle(AskUserError ex)
 		{
 			// user should add step into his Events.goal or Start.goal
 			// - set static variable 'AskUserMessageAddress'='npub123....'
@@ -33,7 +33,7 @@ namespace PLang.AskUserMessage
 				logger.LogWarning(@$"%AskUserMessageAddress% is empty so no message will be sent. Content is:
 {ex.Message}
 ");
-				return false;
+				return (false, null);
 				
 			}
 			Dictionary<string, object?> parameters = [];
@@ -47,9 +47,9 @@ namespace PLang.AskUserMessage
 			var runGoalTask = pseudoRuntime.RunGoal(goalEngine, context, ".services/PLang.AskUserMessage", "SendMessage.goal", parameters);
 			await runGoalTask;
 
-			if (runGoalTask.Exception != null) throw runGoalTask.Exception;
+			if (runGoalTask.Exception != null) return (false, new Error("Errur running goal", Exception: runGoalTask.Exception));
 
-			goalEngine = runGoalTask.Result;
+			goalEngine = runGoalTask.Result.engine;
 			var engineMemoryStack = goalEngine.GetMemoryStack();
 			// Wait for the response
 			while (true)
@@ -65,19 +65,20 @@ namespace PLang.AskUserMessage
 					// checkout https://github.com/PLangHQ/plang/blob/main/PLang/Exceptions/AskUser/Database/AskUserDatabaseType.cs
 					// to see how the InvokeCallback uses LLM to map the answer from the user to a class.
 
-					var task = ex.InvokeCallback(answer);
+					var task = ex.InvokeCallback([answer]);
 					await task;
 
 					if (task.Exception != null) throw task.Exception;
 
 					
-					return true;
+					return (true, null);
 				}
 
 				await Task.Delay(1000);
 			}
 
 		}
+
 
 		private void InstallServiceGoal()
 		{
