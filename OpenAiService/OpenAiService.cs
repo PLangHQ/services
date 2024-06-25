@@ -124,5 +124,9 @@ I could not deserialize your response. This is the error. Please try to fix it.
 			}
 		}
 
+		public async Task<(object?, IError?)> GetBalance()
+		{
+			return (null, null);
+		}
 	}
 }
