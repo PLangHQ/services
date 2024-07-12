@@ -14,7 +14,10 @@ namespace EnvironmentSettings
 		private readonly ILogger logger;
 		private Dictionary<string, Setting> environmentSettings;
 
-		public bool IsDefaultSystemDbPath => throw new NotImplementedException();
+		public bool IsDefaultSystemDbPath
+		{
+			get { return true; }
+		}
 
 		public EnvironmentSettingsRepository(IPLangFileSystem fileSystem, ILogger logger)
 		{
