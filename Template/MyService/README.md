@@ -26,6 +26,18 @@ This template demonstrates a custom implementation of an LLM service.
        // Your custom implementation here
    }
    ```
+### Building the C# Code
+
+1. Open a terminal and navigate to the folder containing your `.cs` file.
+2. Run the following command to build the project:
+
+   ```bash
+   dotnet build
+   ```
+
+### Copy .dll files
+
+After building, find the `.dll` file in the `bin` folder and copy it to your project’s `.services` folder. You might have to create `.services` folder
 
 ### Using the LLM Service for Code Generation
 
@@ -53,17 +65,3 @@ Start
 - write out %response%
 ```
 
-### Building the C# Code
-
-1. Open a terminal and navigate to the folder containing your `.cs` file.
-2. Run the following command to build the project:
-
-   ```bash
-   dotnet build
-   ```
-
-3. After building, find the `.dll` file in the `bin` folder and copy it to your project’s `.services` folder.
-
----
-
-This version is streamlined for clarity and precision, with clear steps and code snippets to guide you through the implementation and usage of the LLM service.
