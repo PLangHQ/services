@@ -1,40 +1,69 @@
-# Template for build .service
+Here’s a cleaned-up and optimized version of the instructions:
 
+---
 
-The example contains custom implementation of LLM service
+# LLM Service Template
 
+This template demonstrates a custom implementation of an LLM service.
 
-LLM service is special if you want to use it to build code. It must be injected with the @ character
-This is because it needs to parse the inject as soon as builder starts and replace the default llm service
-	  
+### Steps to Implement
+
+1. **Modify the `NewLlmService.cs` file:**
+
+   Update the following properties in the file:
+   ```csharp
+   base.url = "https://localhost";
+   base.settingKey = "NewLlmService";
+   base.appId = ""; // set GUID here, go to https://guidgenerator.com/ for GUID
+   ```
+
+2. **Customize the `Query` Method:**
+
+   Modify the `Query` method to fit your specific needs:
+   ```csharp
+   public override async Task<(object?, IError?)> Query(LlmRequest question, Type responseType, int errorCount)
+   {
+       // Your custom implementation here
+   }
+   ```
+
+### Using the LLM Service for Code Generation
+
+To use the service for code generation, inject it with the `@` character as shown below. This ensures the service is parsed and injected when the builder starts, replacing the default LLM service:
+
 ```plang
 @llm=NewLlmService
-	  
+
 Start
 - write out 'hello'
 ```
 
-	  
-This should cause the NewLlmService to be used to build the plang code.
-	  
-If the service is not meant for building code, you can inject it like any other
-	  
+This will use `NewLlmService` to build the `plang` code.
 
-```plang 
+### Using the LLM Service for Other Purposes
+
+If the service is not intended for code generation, you can inject it like this:
+
+```plang
 Start
 - inject llm, 'NewLlmService'
 - [llm] system:Hello
-	 	user: How are your
-	 	write to %response%
+  user: How are you?
+  write to %response%
 - write out %response%
 ```
 
-	  
-	  
-To build the C# code, open terminal, navigate to folder of your .cs file, run command
+### Building the C# Code
 
-```bash
-dotnet build
-```
+1. Open a terminal and navigate to the folder containing your `.cs` file.
+2. Run the following command to build the project:
 
-This will build your C# code, find the .dll file in the bin folder, copy them to your project .services folder.
+   ```bash
+   dotnet build
+   ```
+
+3. After building, find the `.dll` file in the `bin` folder and copy it to your project’s `.services` folder.
+
+---
+
+This version is streamlined for clarity and precision, with clear steps and code snippets to guide you through the implementation and usage of the LLM service.

@@ -42,8 +42,8 @@ namespace MyLlmService
 	{
 		public NewLlmService(ISettings settings, ILogger logger, LlmCaching llmCaching, PLangAppContext context) : base(settings, logger, llmCaching, context)
 		{
-			base.url = "https://localhost";
-			base.settingKey = "NewLlmService";
+			base.url = "https://localhost"; //url to the llm service
+			base.settingKey = "NewLlmService"; //This is the settings key that will store the API key
 			base.appId = ""; // set random GUID here, go to https://guidgenerator.com/ for GUID
 
 			if (string.IsNullOrEmpty(base.appId))
