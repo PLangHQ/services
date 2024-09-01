@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyService", "MyService.csproj", "{0B031616-18A1-4C7E-8F13-96AE84204DA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewLlmService", "NewLlmService.csproj", "{0B031616-18A1-4C7E-8F13-96AE84204DA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
